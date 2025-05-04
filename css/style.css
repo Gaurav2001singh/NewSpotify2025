@@ -286,6 +286,22 @@ body {
     align-items: center;
 }
 
+.songInfoImg{
+    width:20px;
+    display: flex;
+    animation: spinInfinite 1s linear infinite;
+}
+
+@keyframes spinInfinite {
+    0%{
+        transform: rotate(0deg);
+    }
+    100%{
+        transform: rotate(360deg);
+    }
+    
+}
+
 .songinfo{
     width: 250px;
     color: black;
@@ -303,6 +319,13 @@ body {
     align-items: center;
     gap: 10px;
     cursor: pointer;
+}
+
+#volume-message {
+    color: black;
+    font-size: smaller;
+    font-weight: bolder;
+    font-family: "Dancing Script", cursive;
 }
 .range input{
     margin-right: 13px;
