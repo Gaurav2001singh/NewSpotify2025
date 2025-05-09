@@ -2,6 +2,8 @@ console.log("Welcome to spotify")
 
 let currentSong = new Audio;
 
+let currentIndex = null;
+
 let currFolder
 
 let songs;
@@ -49,15 +51,54 @@ async function getSongs(folder) {
                             </div>
                             <div class="playNow">
                                 <span>Play Now</span>
-                                <img class="invert" src="img/play.svg" alt="">
+                                <img class="invert play-icon" src="img/play.svg" alt="">
                             </div></li>`;
     }
-    Array.from(document.querySelector(".songList").getElementsByTagName("li")).forEach(e => {
-        e.addEventListener("click", element => {
-            playMusic(e.querySelector(".info").firstElementChild.innerHTML.trim());
-        })
+    // Array.from(document.querySelector(".songList").getElementsByTagName("li")).forEach(e => {
+    //     // e.addEventListener("click", element => {
+    //     //     console.log(element);
+    //     // })
 
-    })
+    // })
+
+    document.querySelectorAll(".play-icon").forEach((icon, index) => {
+    icon.isPlaying = false;
+
+    icon.addEventListener("click", (e) => {
+        e.stopPropagation();
+
+        const songName = decodeURI(songs[index]);
+
+        if (icon.isPlaying) {
+            currentSong.pause();
+            currentSong.currentTime = 0;
+            icon.src = "img/play.svg";
+            icon.isPlaying = false;
+            currentIndex = null;
+            return;
+        }
+
+    
+        if (currentIndex !== null && currentIndex !== index) {
+            const prevIcon = document.querySelectorAll(".play-icon")[currentIndex];
+            prevIcon.src = "img/play.svg";
+            prevIcon.isPlaying = false;
+        }
+
+        playMusic(songName, false, true);
+        icon.src = "img/pause.svg";
+        icon.isPlaying = true;
+        currentIndex = index;
+
+        
+        currentSong.onended = () => {
+            icon.src = "img/play.svg";
+            icon.isPlaying = false;
+            currentIndex = null;
+        };
+    });
+});
+
 
     return songs
 }
@@ -149,7 +190,8 @@ async function main() {
         if (currentSong.paused) {
             currentSong.play()
             play.src = "img/pause.svg"
-        } else {
+        } 
+        else {
             currentSong.pause()
             play.src = "img/play.svg"
         }
@@ -196,13 +238,33 @@ async function main() {
 
     document.querySelector(".range").getElementsByTagName("input")[0].addEventListener("change", (e) => {
         const volume = parseInt(e.target.value);
+        updateVolume(volume);
+    });
+    
+    document.addEventListener("keydown", (e) => {
+        const input = document.querySelector(".range input");
+        let currentVolume = parseInt(input.value);
+    
+        if (e.key === "ArrowLeft" || e.key === "-") {
+            currentVolume = Math.max(0, currentVolume - 2);
+        } else if (e.key === "ArrowRight" || e.key === "+") {
+            currentVolume = Math.min(100, currentVolume + 2); 
+        } else {
+            return; // Exit if other key
+        }
+    
+        input.value = currentVolume;
+        updateVolume(currentVolume);
+    });
+    
+    function updateVolume(volume) {
         const message = `Volume To ${volume}/100`;
-
         currentSong.volume = volume / 100;
-
+    
         const volumeMsg = document.getElementById("volume-message");
         volumeMsg.textContent = message;
-    })
+    }
+    
 
 
     document.querySelector(".volume>img").addEventListener("click", e => {
