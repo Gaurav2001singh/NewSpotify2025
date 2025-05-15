@@ -51,53 +51,53 @@ async function getSongs(folder) {
                             </div>
                             <div class="playNow">
                                 <span>Play Now</span>
-                                <img class="invert play-icon" src="img/play.svg" alt="">
+                                <img class=" play-icon" src="img/play.svg" alt="">
                             </div></li>`;
     }
-    // Array.from(document.querySelector(".songList").getElementsByTagName("li")).forEach(e => {
-    //     // e.addEventListener("click", element => {
-    //     //     console.log(element);
-    //     // })
-
-    // })
 
     document.querySelectorAll(".play-icon").forEach((icon, index) => {
-    icon.isPlaying = false;
+        icon.isPlaying = false;
+        icon.style.backgroundColor = "#29A354";
+        icon.style.border = "2px solid red";
+        icon.style.boxShadow = "0 0 5px #29A354";
+        icon.style.borderRadius = "50%";
+        icon.style.padding = "1px";
+        icon.style.width = "25px";
 
-    icon.addEventListener("click", (e) => {
-        e.stopPropagation();
+        icon.addEventListener("click", (e) => {
+            e.stopPropagation();
 
-        const songName = decodeURI(songs[index]);
+            const songName = decodeURI(songs[index]);
 
-        if (icon.isPlaying) {
-            currentSong.pause();
-            currentSong.currentTime = 0;
-            icon.src = "img/play.svg";
-            icon.isPlaying = false;
-            currentIndex = null;
-            return;
-        }
+            if (icon.isPlaying) {
+                currentSong.pause();
+                currentSong.currentTime = 0;
+                icon.src = "img/play.svg";
+                icon.isPlaying = false;
+                currentIndex = null;
+                return;
+            }
 
-    
-        if (currentIndex !== null && currentIndex !== index) {
-            const prevIcon = document.querySelectorAll(".play-icon")[currentIndex];
-            prevIcon.src = "img/play.svg";
-            prevIcon.isPlaying = false;
-        }
 
-        playMusic(songName, false, true);
-        icon.src = "img/pause.svg";
-        icon.isPlaying = true;
-        currentIndex = index;
+            if (currentIndex !== null && currentIndex !== index) {
+                const prevIcon = document.querySelectorAll(".play-icon")[currentIndex];
+                prevIcon.src = "img/play.svg";
+                prevIcon.isPlaying = false;
+            }
 
-        
-        currentSong.onended = () => {
-            icon.src = "img/play.svg";
-            icon.isPlaying = false;
-            currentIndex = null;
-        };
+            playMusic(songName, false, true);
+            icon.src = "img/pause.svg";
+            icon.isPlaying = true;
+            currentIndex = index;
+
+
+            currentSong.onended = () => {
+                icon.src = "img/play.svg";
+                icon.isPlaying = false;
+                currentIndex = null;
+            };
+        });
     });
-});
 
 
     return songs
@@ -105,32 +105,64 @@ async function getSongs(folder) {
 
 const playMusic = (track, pause = false, shouldReplace = true) => {
 
-    if (!track) {
-        document.querySelector(".songinfo").innerHTML = `No Song Selected`;
-        document.querySelector(".songtime").innerHTML = "00:00 / 00:00";
-        return;
-    }
-
     if (!track && lastPlayedTrack) {
         track = lastPlayedTrack;
+    }
+
+    if (!track) {
+        document.querySelector(".songinfo").innerHTML = `<strong>Album Not Found</strong>`;
+        document.querySelector(".songtime").innerHTML = "00:00 / 00:00";
+        return;
     }
 
     if (track && shouldReplace) {
         lastPlayedTrack = track;
         currentSong.src = `/${currFolder}/` + track;
-        document.querySelector(".songInfoImg").classList.add("rotate");
     }
+
+    document.querySelector(".songinfo").innerHTML = decodeURI(track) +
+        `<img class="songInfoImg" src="https://images.squarespace-cdn.com/content/v1/61abb71bd16d7417cc519fb4/1638672750636-9UEWA5IV2RC5YPGZ7KSO/label+services.jpg">`;
+    document.querySelector(".songtime").innerHTML = "00:00 / 00:00";
+
+    const songInfoImg = document.querySelector(".songInfoImg");
 
     if (!pause && shouldReplace) {
         currentSong.play();
         play.src = "img/pause.svg";
+
+        if (songInfoImg) {
+            songInfoImg.style.display = "flex";
+            songInfoImg.classList.add("rotate");
+        }
     }
 
+    if (pause) {
+        currentSong.pause();
+        play.src = "img/play.svg";
 
-    document.querySelector(".songinfo").innerHTML = decodeURI(track) + `<img class="songInfoImg" src = "https://images.squarespace-cdn.com/content/v1/61abb71bd16d7417cc519fb4/1638672750636-9UEWA5IV2RC5YPGZ7KSO/label+services.jpg">`;
-    document.querySelector(".songtime").innerHTML = "00:00 / 00:00";
-
+        if (songInfoImg) {
+            songInfoImg.classList.remove("rotate");
+            songInfoImg.style.display = "none";
+        }
+    }
 };
+
+currentSong.addEventListener("ended", () => {
+    const songInfoImg = document.querySelector(".songInfoImg");
+    if (songInfoImg) {
+        songInfoImg.classList.remove("rotate");
+        songInfoImg.style.display = "none";
+    }
+    play.src = "img/play.svg";
+
+    currentIndex++;
+    if(currentIndex < songs.length) {
+        playMusic(songs[currentIndex],);
+    }else{
+        playMusic(songs[0],);
+        // currentSong.pause();
+    }
+});
 
 
 
@@ -190,7 +222,7 @@ async function main() {
         if (currentSong.paused) {
             currentSong.play()
             play.src = "img/pause.svg"
-        } 
+        }
         else {
             currentSong.pause()
             play.src = "img/play.svg"
@@ -240,31 +272,39 @@ async function main() {
         const volume = parseInt(e.target.value);
         updateVolume(volume);
     });
-    
+
     document.addEventListener("keydown", (e) => {
         const input = document.querySelector(".range input");
         let currentVolume = parseInt(input.value);
-    
+
         if (e.key === "ArrowLeft" || e.key === "-") {
             currentVolume = Math.max(0, currentVolume - 2);
         } else if (e.key === "ArrowRight" || e.key === "+") {
-            currentVolume = Math.min(100, currentVolume + 2); 
+            currentVolume = Math.min(100, currentVolume + 2);
         } else {
             return; // Exit if other key
         }
-    
+
         input.value = currentVolume;
         updateVolume(currentVolume);
     });
-    
+
     function updateVolume(volume) {
         const message = `Volume To ${volume}/100`;
         currentSong.volume = volume / 100;
-    
+
         const volumeMsg = document.getElementById("volume-message");
         volumeMsg.textContent = message;
     }
-    
+
+    document.getElementById("Rewind").addEventListener("click", () => {
+        currentSong.currentTime = Math.max(0, currentSong.currentTime - 10);
+    });
+
+    document.getElementById("Forward").addEventListener("click", () => {
+        currentSong.currentTime = Math.min(currentSong.duration, currentSong.currentTime + 10);
+    });
+
 
 
     document.querySelector(".volume>img").addEventListener("click", e => {

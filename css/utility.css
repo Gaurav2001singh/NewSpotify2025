@@ -33,34 +33,4 @@
 .p-1{
     padding: 10px;
 }
-/* For modern browsers */
-body::-webkit-scrollbar {
-    width: 12px; /* Width of the scrollbar */
-}
 
-body::-webkit-scrollbar-track {
-    background: #1a1a1a; /* Dark track background */
-    border-radius: 6px; /* Rounded corners for the track */
-}
-
-body::-webkit-scrollbar-thumb {
-    background: #555; /* Dark gray scrollbar thumb */
-    border-radius: 6px; /* Rounded corners for the thumb */
-    border: 2px solid #1a1a1a; /* Adds spacing and makes the thumb stand out */
-}
-
-body::-webkit-scrollbar-thumb:hover {
-    background: #777; /* Lighter gray on hover */
-}
-
-/* For Firefox */
-body {
-    scrollbar-width: thin; /* Thin scrollbar */
-    scrollbar-color: #555 #1a1a1a; /* Thumb color and track color */
-}
-
-/* Optional for styling */
-html {
-    background-color: #121212; /* Example background color for the page */
-    color: #eaeaea; /* Light text color for contrast */
-}
